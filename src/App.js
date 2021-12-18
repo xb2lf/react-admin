@@ -8,6 +8,7 @@ export default function App() {
   return (
     <div>
       <Button type='primary' onClick={handleClick}>Primary</Button>
+      <Button type='primary' onClick={handleClick}>Primary</Button>
     </div>
   )
 }

@@ -1,15 +1,17 @@
-import React from 'react'
-import { Button, message } from 'antd'
-
-export default function App() {
-  const handleClick = () => {
-    message.success('恭喜你，中奖了！')
+import React, { Component } from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { Login, Admin } from './pages'
+export default class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route path='/login' component={Login}></Route>
+          <Route path='/' component={Admin}></Route>
+        </Switch>
+      </BrowserRouter>
+    )
   }
-  return (
-    <div>
-      <Button type='primary' onClick={handleClick}>Primary</Button>
-      <Button type='primary' onClick={handleClick}>Primary</Button>
-    </div>
-  )
 }
+
 

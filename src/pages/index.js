@@ -1,7 +1,23 @@
 import Login from "./Login";
 import Admin from "./Admin";
+import Home from './Home';
+import Category from './Category';
+import Product from './Product';
+import User from './User';
+import Role from './Role';
+import Bar from './Charts/Bar';
+import Line from './Charts/Line';
+import Pie from './Charts/Pie';
 
 export {
   Login,
-  Admin
+  Admin,
+  Home,
+  Category,
+  Product,
+  User,
+  Role,
+  Bar,
+  Line,
+  Pie,
 }

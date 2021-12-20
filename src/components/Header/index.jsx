@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined } from '@ant-design/icons'
 import { reqWeather } from '../../api';
 import memoryUtils from '../../utils/memoryUtils';
 import { formatDate } from '../../utils/dateUtils';
@@ -53,7 +53,7 @@ class Header extends Component {
   }
   handleLogout = () => {
     confirm({
-      icon: <ExclamationCircleOutlined />,
+      icon: <QuestionCircleOutlined />,
       content: '确定要退出登录吗?',
       okText: '确定',
       cancelText: '取消',

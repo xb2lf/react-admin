@@ -1,0 +1,7 @@
+.add-product .back-arrow {
+  margin-right: 15px;
+  font-size: 20px;
+}
+.add-product .add-textarea textarea {
+  resize: vertical !important;
+}

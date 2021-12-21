@@ -1,0 +1,13 @@
+.product-home .product-home-select {
+  width: 150px;
+}
+.product-home .product-home-input {
+  width: 150px;
+  margin: 0 15px;
+}
+.product-home .product-name {
+  min-width: 240px;
+}
+.product-home .product-desc {
+  min-width: 400px;
+}

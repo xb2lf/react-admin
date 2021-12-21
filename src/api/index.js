@@ -4,7 +4,7 @@
  */
 import jsonp from 'jsonp'
 import { message } from 'antd'
-import ajax from './ajax'
+import ajax from './ajax';
 
 const BASE = '';
 //登录
@@ -44,5 +44,22 @@ export const reqAddCategory = (categoryName, parentId) => ajax(BASE + '/manage/c
 
 //更新分类名称
 export const reqUpdateCategory = ({ categoryName, categoryId }) => ajax(BASE + '/manage/category/update', { categoryName, categoryId }, 'POST')
+
+//获取商品分页列表
+export const reqProducts = (pageNum, pageSize) => ajax(BASE + '/manage/product/list', { pageNum, pageSize }, 'GET')
+
+//搜索商品分页列表
+/* 
+ * @ params
+ *   productName/productDesc
+ */
+export const reqSearchProducts = (pageNum, pageSize, searchName, searchType) => ajax(BASE + '/manage/product/search', { pageNum, pageSize, [searchType]: searchName }, 'GET')
+
+//获取一个分类
+export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', { categoryId }, 'GET')
+
+//更新商品状态
+
+export const reqUpdateStatus = (productId, status) => ajax(BASE + '/manage/product/updateStatus', { productId, status }, 'POST')
 
 

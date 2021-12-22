@@ -1,21 +1,25 @@
-import React, { Component } from "react";
-import { Card, Form, Input, Cascader, Upload, Button, message } from "antd";
-import {
-  LoadingOutlined,
-  PlusOutlined,
-  ArrowLeftOutlined,
-} from "@ant-design/icons";
-import { LinkButton } from "../../../../components";
-import { reqCategorys } from '../../../../api'
+import React, { Component, createRef } from "react";
+import { Card, Form, Input, Cascader, Button, message } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { LinkButton, PicturesWall, RichTextEditor } from "../../../../components";
+import { reqCategorys, reqAddOrUpdateProduct } from '../../../../api'
 import "./index.less";
 
 const { Item } = Form;
 const { TextArea } = Input;
 
 export default class ProductAddUpdate extends Component {
+  upPicture = createRef(null);
+  editor = createRef(null);
   state = {
     options: [],
     parentId: '0',
+    isUpdate: false,
+    product: {},
+  }
+  UNSAFE_componentWillMount() {
+    const product = this.props.location.state;
+    this.setState({ isUpdate: !!product, product: product || {} })
   }
   componentDidMount() {
     const { parentId } = this.state
@@ -58,24 +62,70 @@ export default class ProductAddUpdate extends Component {
       message.warning('请求分类失败，请稍后再试')
     }
   }
-  initOptions = (categorys) => {
+  initOptions = async (categorys) => {
     const options = categorys.map(el => ({
       value: el._id,
       label: el.name,
       isLeaf: false
     }));
+    const { isUpdate, product } = this.state;
+    const { pCategoryId } = product;
+    if (isUpdate && pCategoryId !== '0') {
+      const subCategorys = await this.getCategorys(pCategoryId);
+      const childOptions = subCategorys.map(el => ({
+        value: el._id,
+        label: el.name,
+        isLeaf: true,
+      }));
+      const targetOption = options.find(option => option.value === pCategoryId);
+      targetOption.children = childOptions;
+    }
     this.setState({ options })
   }
   handleJumpHome = () => {
     this.props.history.goBack();
   };
   handleSubmit = async (values) => {
-    console.log(values);
+    const { name, desc, price, categoryIds } = values;
+    const { isUpdate } = this.state;
+    let pCategoryId, categoryId;
+    if (categoryIds.length === 1) {
+      pCategoryId = '0';
+      categoryId = categoryIds[0]
+    } else {
+      pCategoryId = categoryIds[0];
+      categoryId = categoryIds[1];
+    }
+    const imgs = this.upPicture.current.getImgs();
+    const detail = this.editor.current.getDetail();
+    const product = { name, desc, price, pCategoryId, categoryId, imgs, detail };
+    if (isUpdate) {
+      product._id = this.state.product._id;
+    }
+    const res = await reqAddOrUpdateProduct(product);
+    const msgText = isUpdate ? '更新' : '添加';
+    if (res.status === 0) {
+      message.success(`${msgText}商品成功`);
+      this.props.history.goBack();
+    } else {
+      message.error(`${msgText}商品失败`);
+    }
   };
   handleSubmitFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
   render() {
+    const { isUpdate, product } = this.state;
+    const { pCategoryId, categoryId, imgs, detail } = product;
+    const categoryIds = [];
+    if (isUpdate) {
+      if (pCategoryId === '0') {
+        categoryIds.push(pCategoryId)
+      } else {
+        categoryIds.push(pCategoryId)
+        categoryIds.push(categoryId)
+      }
+    }
     const title = (
       <span>
         <LinkButton>
@@ -84,7 +134,7 @@ export default class ProductAddUpdate extends Component {
             onClick={this.handleJumpHome}
           />
         </LinkButton>
-        <span>添加商品</span>
+        <span>{isUpdate ? '修改商品' : '添加商品'}</span>
       </span>
     );
     const formItemLayout = {
@@ -102,7 +152,7 @@ export default class ProductAddUpdate extends Component {
             rules={[
               { required: true, whitespace: true, message: "请输入商品名称！" },
             ]}
-            initialValue={""}
+            initialValue={product.name}
           >
             <Input placeholder="请输入商品名称" />
           </Item>
@@ -112,7 +162,7 @@ export default class ProductAddUpdate extends Component {
             rules={[
               { required: true, whitespace: true, message: "请输入商品描述！" },
             ]}
-            initialValue={""}
+            initialValue={product.desc}
           >
             <TextArea
               autoSize={{ minRows: 2, maxRows: 6 }}
@@ -126,38 +176,34 @@ export default class ProductAddUpdate extends Component {
             label="商品价格"
             name="price"
             rules={[
-              { required: true, whitespace: true, message: "请输入商品价格！" },
+              { required: true, message: "请输入商品价格！" },
               { validator: this.validattePrice }
             ]}
-            initialValue={""}
+            initialValue={product.price}
           >
             <Input type="number" placeholder="请输入商品价格" addonAfter="元" />
           </Item>
           <Item
             label="商品分类"
-            name="category"
+            name="categoryIds"
             rules={[{ required: true, message: "请选择商品分类！" }]}
-            initialValue={''}
+            initialValue={categoryIds}
           >
-            <Cascader options={this.state.options} loadData={this.loadData} changeOnSelect />
+            <Cascader placeholder="请选择商品分类" options={this.state.options} loadData={this.loadData} changeOnSelect />
           </Item>
           <Item
             label="商品图片"
             name="imgs"
-            rules={[{ required: true, message: "请上传商品图片" }]}
-            initialValue={""}
           >
-            <div>上传图片</div>
+            <PicturesWall imgs={imgs} ref={this.upPicture} />
           </Item>
           <Item
             label="商品详情"
             name="detail"
-            rules={[
-              { required: true, whitespace: true, message: "请输入商品详情！" },
-            ]}
-            initialValue={""}
+            labelCol={{ span: 2 }}
+            wrapperCol={{ span: 18 }}
           >
-            <Input placeholder="请输入商品详情" />
+            <RichTextEditor ref={this.editor} detail={detail} />
           </Item>
           <Item>
             <Button type="primary" htmlType="submit">

@@ -62,4 +62,17 @@ export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', 
 
 export const reqUpdateStatus = (productId, status) => ajax(BASE + '/manage/product/updateStatus', { productId, status }, 'POST')
 
+//删除已上传图片
+export const reqDeleteImg = (name) => ajax(BASE + '/manage/img/delete', { name }, 'POST')
+
+// 添加商品/更新商品
+/* 
+ * params 
+ * product是一个对象，包含:name,desc,price,PcategoryId,categoryId,imgs,detail
+ * 其中imgs代表商品图片，可能一张也可能多张，数组形式
+ * 如果是添加商品则不包含_id,如果是更新商品则需指定_id
+ */
+export const reqAddOrUpdateProduct = (product) => ajax(BASE + `/manage/product/${product._id ? 'update' : 'add'}`, product, 'POST')
+
+
 

@@ -76,7 +76,7 @@ export default class ProductHome extends Component {
             <LinkButton onClick={() => this.handleJumpDetail(product)}>
               详情
             </LinkButton>
-            <LinkButton>修改</LinkButton>
+            <LinkButton onClick={() => this.handleJumpUpdate(product)}>修改</LinkButton>
           </span>
         ),
       },
@@ -153,6 +153,9 @@ export default class ProductHome extends Component {
   handleJumpAdd = () => {
     this.props.history.push('/product/addUpdate');
   };
+  handleJumpUpdate = (product) => {
+    this.props.history.push('/product/addUpdate', product);
+  }
   render() {
     const {
       products,

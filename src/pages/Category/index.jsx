@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import { Card, Button, Table, message, Modal } from "antd";
 import { PlusOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { LinkButton } from "../../components";
 import { AddForm, UpdateForm } from "./components";
 import { reqCategorys, reqUpdateCategory, reqAddCategory } from "../../api";
 export default class Category extends Component {
+  addCategoryFrom = createRef(null);
+  upCategory = createRef(null);
   state = {
     categorys: [],
     subCategorys: [],
@@ -17,10 +19,6 @@ export default class Category extends Component {
     showStatus: 0, //确认添加/更新的确认框是否显示，0：都不显示，1：显示添加，2：显示更新
     categoryId: '',
     categoryName: '',
-    newCateporyName: '',
-    newParentId: '',
-    addValidate: false,
-    updateValidate: false
 
   };
   UNSAFE_componentWillMount() {
@@ -70,19 +68,6 @@ export default class Category extends Component {
       message.warning("获取分类列表失败");
     }
   };
-  updateCateporyName = (name, validate) => {
-    this.setState({
-      categoryName: name,
-      updateValidate: validate,
-    });
-  };
-  addCateporyName = (id, name, validate) => {
-    this.setState({
-      newParentId: id,
-      newCateporyName: name,
-      addValidate: validate
-    })
-  }
   handleShowTotal = (total, range) => {
     return <div>总共{total}条</div>;
   };
@@ -125,39 +110,41 @@ export default class Category extends Component {
     });
   };
   handelAddCategory = async () => {
-    const { newParentId, newCateporyName, parentId, addValidate } = this.state;
-    if (!addValidate) {
-      message.warning('您未输入分类名称或输入的分类名称不合法，请重新输入');
-      return;
-    }
-    this.setState({
-      showStatus: 0,
-    });
-    const res = await reqAddCategory(newCateporyName, newParentId);
-    if (res.status === 0) {
-      if (newParentId === parentId) {
-        //重新获取当前分类列表
-        this.getCategorys();
+    this.addCategoryFrom.current.formRef.current.validateFields().then(async (values) => {
+      this.setState({
+        showStatus: 0,
+      });
+      const { parentId } = this.state;
+      const { parentId: newParentId, categoryName } = values;
+      const res = await reqAddCategory(categoryName, newParentId);
+      if (res.status === 0) {
+        if (newParentId === parentId) {
+          //重新获取当前分类列表
+          this.getCategorys();
+        }
+      } else {
+        message.error('添加分类失败，请稍后再试')
       }
-    } else {
-      message.error('添加分类失败，请稍后再试')
-    }
-  };
-  handleUpdateCategory = async () => {
-    const { categoryName, categoryId, updateValidate } = this.state;
-    if (!updateValidate) {
+    }).catch(error => {
       message.warning('您未输入分类名称或输入的分类名称不合法，请重新输入');
-      return;
-    }
-    this.setState({
-      showStatus: 0,
+    })
+  };
+  handleUpdateCategory = () => {
+    this.upCategory.current.formRef.current.validateFields().then(async (values) => {
+      this.setState({
+        showStatus: 0,
+      });
+      const { categoryName } = values;
+      const { categoryId } = this.state;
+      const res = await reqUpdateCategory({ categoryName, categoryId });
+      if (res.status === 0) {
+        this.getCategorys();
+      } else {
+        message.error("更新分类失败，请稍后再试");
+      }
+    }).catch((error) => {
+      message.warning('您未输入分类名称或输入的分类名称不合法，请重新输入');
     });
-    const res = await reqUpdateCategory({ categoryName, categoryId });
-    if (res.status === 0) {
-      this.getCategorys();
-    } else {
-      message.error("更新分类失败，请稍后再试");
-    }
   };
   handleHideModal = () => {
     this.setState({
@@ -246,9 +233,9 @@ export default class Category extends Component {
           cancelText="取消"
         >
           <AddForm
+            ref={this.addCategoryFrom}
             categorys={categorys}
             parentId={parentId}
-            addCateporyName={this.addCateporyName}
           />
         </Modal>
         <Modal
@@ -261,8 +248,8 @@ export default class Category extends Component {
           cancelText="取消"
         >
           <UpdateForm
+            ref={this.upCategory}
             categoryName={categoryName}
-            updateCateporyName={this.updateCateporyName}
           />
         </Modal>
       </Card>

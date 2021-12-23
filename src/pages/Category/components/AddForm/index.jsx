@@ -10,7 +10,6 @@ export default class AddForm extends Component {
   static propTypes = {
     categorys: PropTypes.array.isRequired,
     parentId: PropTypes.string.isRequired,
-    addCateporyName: PropTypes.func.isRequired,
   }
   componentDidMount() {
     this.formRef.current.resetFields();
@@ -22,23 +21,16 @@ export default class AddForm extends Component {
       })
     }
   }
-  handleInput = (changedValues, allValues) => {
-    if (!allValues.categoryName || !allValues.parentId) {
-      this.props.addCateporyName(allValues.parentId, allValues.categoryName, false)
-      return;
-    }
-    this.props.addCateporyName(allValues.parentId, allValues.categoryName, true)
-  }
   render() {
     const { categorys, parentId } = this.props
     return (
-      <Form layout="vertical" ref={this.formRef} onValuesChange={this.handleInput}>
+      <Form layout="vertical" ref={this.formRef}>
         <Item
           label="所属分类"
           name="parentId"
           initialValue={parentId}
           rules={[
-            { required: true, whitespace: true, message: "请输入用户名！" },
+            { required: true, whitespace: true, message: "请选择所属分类！" },
           ]}
         >
           <Select>

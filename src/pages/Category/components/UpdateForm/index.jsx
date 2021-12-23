@@ -7,7 +7,6 @@ export default class UpdateForm extends Component {
   formRef = createRef()
   static propTypes = {
     categoryName: PropTypes.string.isRequired,
-    updateCateporyName: PropTypes.func.isRequired,
   }
   componentDidMount() {
     this.formRef.current.resetFields();
@@ -19,17 +18,10 @@ export default class UpdateForm extends Component {
       })
     }
   }
-  handleInput = (changedValues, allValues) => {
-    if (!changedValues.categoryName) {
-      this.props.updateCateporyName(changedValues.categoryName, false);
-      return;
-    }
-    this.props.updateCateporyName(changedValues.categoryName, true);
-  }
   render() {
     const { categoryName } = this.props;
     return (
-      <Form layout="vertical" ref={this.formRef} onValuesChange={this.handleInput}>
+      <Form layout="vertical" ref={this.formRef}>
         <Item
           label="分类名称"
           name="categoryName"

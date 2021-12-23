@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { PureComponent, createRef } from "react";
 import { Card, Form, Input, Cascader, Button, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { LinkButton, PicturesWall, RichTextEditor } from "../../../../components";
@@ -8,7 +8,7 @@ import "./index.less";
 const { Item } = Form;
 const { TextArea } = Input;
 
-export default class ProductAddUpdate extends Component {
+export default class ProductAddUpdate extends PureComponent {
   upPicture = createRef(null);
   editor = createRef(null);
   state = {

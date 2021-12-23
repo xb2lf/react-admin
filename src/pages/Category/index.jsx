@@ -4,7 +4,6 @@ import { PlusOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { LinkButton } from "../../components";
 import { AddForm, UpdateForm } from "./components";
 import { reqCategorys, reqUpdateCategory, reqAddCategory } from "../../api";
-import "./index.less";
 export default class Category extends Component {
   state = {
     categorys: [],

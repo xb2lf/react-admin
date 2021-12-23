@@ -7,8 +7,10 @@ export default class UpdateForm extends Component {
   formRef = createRef()
   static propTypes = {
     categoryName: PropTypes.string.isRequired,
+    setForm: PropTypes.func.isRequired
   }
   componentDidMount() {
+    this.props.setForm(this.formRef);
     this.formRef.current.resetFields();
   }
   UNSAFE_componentWillReceiveProps(nextProps) {

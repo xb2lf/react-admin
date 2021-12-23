@@ -10,8 +10,10 @@ export default class AddForm extends Component {
   static propTypes = {
     categorys: PropTypes.array.isRequired,
     parentId: PropTypes.string.isRequired,
+    setForm: PropTypes.func.isRequired,
   }
   componentDidMount() {
+    this.props.setForm(this.formRef);
     this.formRef.current.resetFields();
   }
   UNSAFE_componentWillReceiveProps(nextProps) {

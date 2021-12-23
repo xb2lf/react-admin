@@ -81,9 +81,9 @@ class Login extends Component {
               name="username"
               rules={[
                 { required: true, whitespace: true, message: "请输入用户名！" },
-                { min: 4, message: '用户名至少4位' },
+                { min: 2, message: '用户名至少4位' },
                 { max: 12, message: '用户名至多12位' },
-                { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名必须是英文、数字或者下划线组成' },
+                { pattern: /^[u4e00-u9fa5_a-zA-Z0-9]+$/, message: '用户名必须是中英文、数字或者下划线组成' },
               ]}
             >
               <Input

@@ -5,7 +5,8 @@ import { PAGE_SIZE } from "../../utils/constants";
 import { formatDate } from '../../utils/dateUtils';
 import { reqRoles, reqAddrole, reqUpdaterole } from '../../api';
 import { AddForm, AuthForm } from './components';
-import memoryUtils from '../../utils/memoryUtils'
+import memoryUtils from '../../utils/memoryUtils';
+import { removeUser } from '../../utils/storageUtils'
 import "./index.less";
 
 export default class Role extends Component {
@@ -128,11 +129,19 @@ export default class Role extends Component {
     role.auth_time = Date.now()
     const res = await reqUpdaterole(role);
     if (res.status === 0) {
-      message.success('设置角色权限成功');
-      /* this.getRoles(); */
-      this.setState({
-        roles: [...this.state.roles]
-      })
+      //如果当前更新的是自己的权限，强制退出
+      if (role._id === memoryUtils.user.role._id) {
+        memoryUtils.user = {};
+        removeUser();
+        this.props.history.replace('/login');
+        message.info('当前用户角色权限已更新，重新登录');
+      } else {
+        message.success('设置角色权限成功');
+        /* this.getRoles(); */
+        this.setState({
+          roles: [...this.state.roles]
+        })
+      }
     } else {
       message.error('设置角色权限失败')
     }

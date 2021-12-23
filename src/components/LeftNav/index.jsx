@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { Menu } from "antd";
 import { menuList, defaultSelectedKeys } from "../../config/menuConfig";
+import memoryUtils from '../../utils/memoryUtils'
 import logo from "../../assets/images/logo.png";
 import "./index.less";
 
@@ -14,52 +15,75 @@ class LeftNav extends Component {
   UNSAFE_componentWillMount() {
     this.menuNodes = this.getmenuNodes(menuList);
   }
+  /* 
+   * 判断当前登录用户对item是否有权限
+   * 1. admin 
+   * 2. 当前item是公共的
+   * 3. 当前用户由此item的权限
+   * 4. 如果当前用户有此item的子项的权限
+   */
+  hasAuth = (item) => {
+    const { key, isPublic } = item;
+    const menus = memoryUtils.user.role.menus;
+    const username = memoryUtils.user.username;
+    if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
+      return true
+    } else if (item.children) {
+      return !!item.children.find(child => menus.indexOf(child.key) !== -1)
+    } else {
+      return false
+    }
+  }
   getmenuNodes = (menuList) => {
     const path = this.props.location.pathname;
     return menuList.map((item) => {
-      if (item.children) {
-        const cItem = item.children.find((cItem) => path.indexOf(cItem.key) === 0);
-        if (cItem) {
-          this.openKey = item.key;
+      if (this.hasAuth(item)) {
+        if (item.children) {
+          const cItem = item.children.find((cItem) => path.indexOf(cItem.key) === 0);
+          if (cItem) {
+            this.openKey = item.key;
+          }
+          return (
+            <SubMenu
+              key={item.key}
+              collapsed="false"
+              icon={item.icon}
+              title={item.title}
+            >
+              {this.getmenuNodes(item.children)}
+            </SubMenu>
+          );
+        } else {
+          return (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.key}>{item.title}</Link>
+            </Menu.Item>
+          );
         }
-        return (
-          <SubMenu
-            key={item.key}
-            collapsed="false"
-            icon={item.icon}
-            title={item.title}
-          >
-            {this.getmenuNodes(item.children)}
-          </SubMenu>
-        );
-      } else {
-        return (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.key}>{item.title}</Link>
-          </Menu.Item>
-        );
       }
     });
   };
   getmenuNodeTree = (menuList) => {
     return menuList.reduce((prev, item) => {
-      if (!item.children) {
-        prev.push(
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.key}>{item.title}</Link>
-          </Menu.Item>
-        );
-      } else {
-        prev.push(
-          <SubMenu
-            key={item.key}
-            collapsed="false"
-            icon={item.icon}
-            title={item.title}
-          >
-            {this.getmenuNodeTree(item.children)}
-          </SubMenu>
-        );
+      if (this.hasAuth(item)) {
+        if (!item.children) {
+          prev.push(
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.key}>{item.title}</Link>
+            </Menu.Item>
+          );
+        } else {
+          prev.push(
+            <SubMenu
+              key={item.key}
+              collapsed="false"
+              icon={item.icon}
+              title={item.title}
+            >
+              {this.getmenuNodeTree(item.children)}
+            </SubMenu>
+          );
+        }
       }
       return prev;
     }, []);

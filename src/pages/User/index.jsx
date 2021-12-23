@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { Component } from "react";
 import { Card, Button, Table, message, Modal } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { LinkButton } from '../../components'
@@ -9,7 +9,6 @@ import { AddForm } from './components';
 
 const { confirm } = Modal;
 export default class User extends Component {
-  userFrom = createRef(null)
   state = {
     users: [],//所有用户列表
     roles: [], //所有角色列表
@@ -113,7 +112,7 @@ export default class User extends Component {
     this.setState({ user: {}, isUpdate: false, isShow: true });
   }
   handelAddUser = async () => {
-    this.userFrom.current.formRef.current.validateFields().then(async (values) => {
+    this.form.current.validateFields().then(async (values) => {
       this.setState({ isShow: false });
       const user = values;
       const { isUpdate, updateUserId } = this.state;
@@ -217,9 +216,9 @@ export default class User extends Component {
           cancelText="取消"
         >
           <AddForm
-            ref={this.userFrom}
             roles={roles}
             user={user}
+            setForm={form => this.form = form}
           />
         </Modal>
       </Card>

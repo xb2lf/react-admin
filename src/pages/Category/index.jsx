@@ -1,12 +1,10 @@
-import React, { Component, createRef } from "react";
+import React, { Component } from "react";
 import { Card, Button, Table, message, Modal } from "antd";
 import { PlusOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { LinkButton } from "../../components";
 import { AddForm, UpdateForm } from "./components";
 import { reqCategorys, reqUpdateCategory, reqAddCategory } from "../../api";
 export default class Category extends Component {
-  addCategoryFrom = createRef(null);
-  upCategory = createRef(null);
   state = {
     categorys: [],
     subCategorys: [],
@@ -110,7 +108,7 @@ export default class Category extends Component {
     });
   };
   handelAddCategory = async () => {
-    this.addCategoryFrom.current.formRef.current.validateFields().then(async (values) => {
+    this.addCategoryFrom.current.validateFields().then(async (values) => {
       this.setState({
         showStatus: 0,
       });
@@ -130,7 +128,7 @@ export default class Category extends Component {
     })
   };
   handleUpdateCategory = () => {
-    this.upCategory.current.formRef.current.validateFields().then(async (values) => {
+    this.upCategoryForm.current.validateFields().then(async (values) => {
       this.setState({
         showStatus: 0,
       });
@@ -233,7 +231,7 @@ export default class Category extends Component {
           cancelText="取消"
         >
           <AddForm
-            ref={this.addCategoryFrom}
+            setForm={form => this.addCategoryFrom = form}
             categorys={categorys}
             parentId={parentId}
           />
@@ -248,7 +246,7 @@ export default class Category extends Component {
           cancelText="取消"
         >
           <UpdateForm
-            ref={this.upCategory}
+            setForm={form => this.upCategoryForm = form}
             categoryName={categoryName}
           />
         </Modal>

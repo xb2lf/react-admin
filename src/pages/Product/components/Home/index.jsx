@@ -135,8 +135,10 @@ export default class ProductHome extends Component {
     this.setState({ searchName: e.target.value });
   };
   handleSearch = () => {
-    const { currPageNum, pageSize } = this.state;
-    this.getProducts(currPageNum, pageSize);
+    this.setState({ currPageNum: 1 }, () => {
+      const { currPageNum, pageSize } = this.state;
+      this.getProducts(currPageNum, pageSize);
+    })
   };
   handleUpdateStatus = async (productId, status) => {
     const currStatus = status === 1 ? 2 : 1;

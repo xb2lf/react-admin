@@ -180,6 +180,7 @@ export default class Role extends Component {
             type: 'radio',
             fixed: true,
             selectedRowKeys: [role._id],
+            onSelect: (role) => { this.setState({ role }) }
           }}
           onRow={this.onRow}
           pagination={{

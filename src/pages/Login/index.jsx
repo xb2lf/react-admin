@@ -1,27 +1,24 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
+import { connect } from 'react-redux';
+import { login } from '../../redux/actions'
 import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./index.less";
 import logo from "../../assets/images/logo.png";
-import { reqLogin } from '../../api'
-import memoryUtils from "../../utils/memoryUtils";
-import { saveUser } from '../../utils/storageUtils'
+
 
 const Item = Form.Item;
 class Login extends Component {
   handleSubmit = async (values) => {
     const { username, password } = values;
-    const result = await reqLogin(username, password)
-    if (result.status === 0 && result.data) {
-      const user = result.data;
+    this.props.login(username, password);
+    /* if () {
       message.success('登陆成功')
-      memoryUtils.user = user; //保存到内存中
-      saveUser(user); //保存到local中
-      this.props.history.replace('/');
+      this.props.history.replace('/home');
     } else {
       message.error(result.msg)
-    }
+    } */
   };
   handleSubmitFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
@@ -56,10 +53,11 @@ class Login extends Component {
     }
   }
   render() {
-    const user = memoryUtils.user
+    const user = this.props.user;
     if (user && user._id) {
-      return <Redirect to="/" />
+      return <Redirect to="/home" />
     }
+    const errorMsg = this.props.user.errorMsg;
     return (
       <div className="login">
         <header className="login-header">
@@ -67,6 +65,8 @@ class Login extends Component {
           <h1>React项目：后台管理系统</h1>
         </header>
         <section className="login-content">
+          <div className={errorMsg ? 'error-msg show' :
+            'error-msg'}>{errorMsg}</div>
           <h2>用户登录</h2>
           <Form
             onFinish={this.handleSubmit}
@@ -116,4 +116,7 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(
+  state => ({ user: state.user }),
+  { login }
+)(Login);

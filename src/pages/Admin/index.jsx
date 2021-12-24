@@ -1,16 +1,16 @@
 import React, { Component } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { Layout } from 'antd';
-import memoryUtils from '../../utils/memoryUtils'
 import { Header, LeftNav } from '../../components'
 import { Home, Category, Product, User, Role, Bar, Line, Pie } from '../index'
 import './index.less'
 
 const { Footer, Sider, Content } = Layout;
-export default class Admin extends Component {
+class Admin extends Component {
   render() {
-    const user = memoryUtils.user
-    // 如果内存没有存储user => 当前没有登录
+    const user = this.props.user
+    // 如果store没有存储user => 当前没有登录
     if (!user || !user._id) {
       //自动跳转到登录（在render）
       return <Redirect to="/login" />
@@ -41,3 +41,5 @@ export default class Admin extends Component {
     )
   }
 }
+
+export default connect(state => ({ user: state.user }))(Admin)

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { Modal } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { logout } from '../../redux/actions'
 import { reqWeather } from '../../api';
-import memoryUtils from '../../utils/memoryUtils';
 import { formatDate } from '../../utils/dateUtils';
-import { menuList } from '../../config/menuConfig';
-import { removeUser } from '../../utils/storageUtils';
 import LinkButton from '../LinkButton'
 import './index.less'
 
@@ -36,21 +35,6 @@ class Header extends Component {
     const weather = await reqWeather('110000');
     this.setState({ weather });
   }
-  getTitle = () => {
-    const path = this.props.location.pathname;
-    let title;
-    menuList.forEach(item => {
-      if (item.key === path) {
-        title = item.title
-      } else if (item.children) {
-        const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0);
-        if (cItem) {
-          title = cItem.title;
-        }
-      }
-    })
-    return title
-  }
   handleLogout = () => {
     confirm({
       icon: <QuestionCircleOutlined />,
@@ -58,16 +42,14 @@ class Header extends Component {
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        removeUser();
-        memoryUtils.user = {};
-        this.props.history.replace('/login');
+        this.props.logout()
       },
     });
   }
   render() {
     const { currentTime, dayPictureUrl, weather } = this.state;
-    const { username } = memoryUtils.user;
-    const title = this.getTitle();
+    const { username } = this.props.user;
+    const title = this.props.headTitle;
     return (
       <div className='header'>
         <div className='header-top'>
@@ -86,4 +68,11 @@ class Header extends Component {
     )
   }
 }
-export default withRouter(Header)
+
+const mapStateToProps = state => ({ headTitle: state.headTitle, user: state.user })
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+})
+
+export default connect(mapStateToProps)(withRouter(Header))

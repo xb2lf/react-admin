@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
+import { connect } from 'react-redux'
 import { Menu } from "antd";
+import { setHeadTitle } from '../../redux/actions'
 import { menuList, defaultSelectedKeys } from "../../config/menuConfig";
-import memoryUtils from '../../utils/memoryUtils'
 import logo from "../../assets/images/logo.png";
 import "./index.less";
 
@@ -24,8 +25,9 @@ class LeftNav extends Component {
    */
   hasAuth = (item) => {
     const { key, isPublic } = item;
-    const menus = memoryUtils.user.role.menus;
-    const username = memoryUtils.user.username;
+    const { user } = this.props;
+    const menus = user.role.menus;
+    const username = user.username;
     if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
       return true
     } else if (item.children) {
@@ -54,9 +56,12 @@ class LeftNav extends Component {
             </SubMenu>
           );
         } else {
+          if (item.key === path || path.indexOf(item.key) === 0) {
+            this.props.setHeadTitle(item.title);
+          }
           return (
             <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.key}>{item.title}</Link>
+              <Link to={item.key} onClick={() => this.props.setHeadTitle(item.title)}>{item.title}</Link>
             </Menu.Item>
           );
         }
@@ -69,7 +74,7 @@ class LeftNav extends Component {
         if (!item.children) {
           prev.push(
             <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.key}>{item.title}</Link>
+              <Link to={item.key} onClick={() => this.props.setHeadTitle(item.title)}>{item.title}</Link>
             </Menu.Item>
           );
         } else {
@@ -108,11 +113,15 @@ class LeftNav extends Component {
           theme="dark"
         >
           {this.menuNodes}
-          {/* {this.getmenuNodeTree(menuList)} */}
         </Menu>
       </div>
     );
   }
 }
 
-export default withRouter(LeftNav);
+const mapStateToProps = state => ({ user: state.user })
+
+const mapDispatchToProps = dispatch => ({
+  setHeadTitle: title => dispatch(setHeadTitle(title))
+})
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(LeftNav));

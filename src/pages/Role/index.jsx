@@ -1,15 +1,15 @@
 import React, { Component, createRef } from "react";
+import { connect } from 'react-redux'
 import { Card, Button, Table, message, Modal } from "antd";
 import { LinkButton } from '../../components'
 import { PAGE_SIZE } from "../../utils/constants";
 import { formatDate } from '../../utils/dateUtils';
 import { reqRoles, reqAddrole, reqUpdaterole } from '../../api';
 import { AddForm, AuthForm } from './components';
-import memoryUtils from '../../utils/memoryUtils';
-import { removeUser } from '../../utils/storageUtils'
+import { logout } from '../../redux/actions'
 import "./index.less";
 
-export default class Role extends Component {
+class Role extends Component {
   auth = createRef(null)
   state = {
     roles: [],//所有角色列表
@@ -118,6 +118,7 @@ export default class Role extends Component {
   }
   handeludateRole = async () => {
     const { role } = this.state;
+    const { user } = this.props;
     const menus = this.auth.current.getMenus();
     if (menus.length === 0) {
       message.warning('请选择对应权限目录');
@@ -125,15 +126,13 @@ export default class Role extends Component {
     }
     this.setState({ isShowAuth: false });
     role.menus = menus;
-    role.auth_name = memoryUtils.user.username;
+    role.auth_name = user.username;
     role.auth_time = Date.now()
     const res = await reqUpdaterole(role);
     if (res.status === 0) {
       //如果当前更新的是自己的权限，强制退出
-      if (role._id === memoryUtils.user.role._id) {
-        memoryUtils.user = {};
-        removeUser();
-        this.props.history.replace('/login');
+      if (role._id === user.role._id) {
+        this.props.logout();
         message.info('当前用户角色权限已更新，重新登录');
       } else {
         message.success('设置角色权限成功');
@@ -231,3 +230,5 @@ export default class Role extends Component {
     );
   }
 }
+
+export default connect(state => ({ user: state.user }), { logout })(Role)

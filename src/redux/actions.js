@@ -19,7 +19,7 @@ export const login = (username, password) => {
   return async dispatch => {
     const res = await reqLogin(username, password);
     if (res.status === 0) {
-      message.success('登录已成功')
+      message.success('登录成功')
       const user = res.data;
       saveUser(user); //保存到local中
       dispatch(receiveUser(user)); //保存到store中

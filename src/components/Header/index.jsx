@@ -75,4 +75,4 @@ const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logout())
 })
 
-export default connect(mapStateToProps)(withRouter(Header))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Header))

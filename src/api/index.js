@@ -6,7 +6,7 @@ import jsonp from 'jsonp'
 import { message } from 'antd'
 import ajax from './ajax';
 
-const BASE = '';
+const BASE = '/api';
 //登录
 export const reqLogin = (username, password) => ajax(BASE + '/login', { username, password }, 'POST')
 

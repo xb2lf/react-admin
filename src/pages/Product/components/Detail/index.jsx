@@ -4,6 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { LinkButton } from "../../../../components";
 import { BASE_IMG_URL } from "../../../../utils/constants";
 import { reqCategory } from "../../../../api";
+import memoryUtils from "../../../../utils/memoryUtils";
 import "./index.less";
 
 const Item = List.Item;
@@ -16,8 +17,12 @@ export default class ProductDetail extends Component {
   componentDidMount() {
     this.getCategory();
   }
+  // 在卸载之前清除保存的数据
+  componentWillUnmount() {
+    memoryUtils.product = {};
+  }
   getCategory = async () => {
-    const { pCategoryId, categoryId } = this.props.location.state.product;
+    const { pCategoryId, categoryId } = memoryUtils.product;
     if (pCategoryId === "0") {
       const res = await reqCategory(categoryId);
       if (res.status === 0) {
@@ -44,7 +49,7 @@ export default class ProductDetail extends Component {
   };
   render() {
     const { name, desc, price, imgs, detail } =
-      this.props.location.state.product;
+      memoryUtils.product;
     const { parentName, childName } = this.state;
     const title = (
       <span>

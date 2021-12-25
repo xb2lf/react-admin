@@ -8,7 +8,7 @@ import Role from './Role';
 import Bar from './Charts/Bar';
 import Line from './Charts/Line';
 import Pie from './Charts/Pie';
-
+import NotFound from './NotFound'
 export {
   Login,
   Admin,
@@ -20,4 +20,5 @@ export {
   Bar,
   Line,
   Pie,
+  NotFound
 }

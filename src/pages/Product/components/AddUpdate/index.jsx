@@ -3,6 +3,7 @@ import { Card, Form, Input, Cascader, Button, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { LinkButton, PicturesWall, RichTextEditor } from "../../../../components";
 import { reqCategorys, reqAddOrUpdateProduct } from '../../../../api'
+import memoryUtils from "../../../../utils/memoryUtils";
 import "./index.less";
 
 const { Item } = Form;
@@ -18,12 +19,16 @@ export default class ProductAddUpdate extends PureComponent {
     product: {},
   }
   UNSAFE_componentWillMount() {
-    const product = this.props.location.state;
-    this.setState({ isUpdate: !!product, product: product || {} })
+    const product = memoryUtils.product;
+    this.setState({ isUpdate: !!product._id, product: product || {} })
   }
   componentDidMount() {
     const { parentId } = this.state
     this.getCategorys(parentId);
+  }
+  // 在卸载之前清除保存的数据
+  componentWillUnmount() {
+    memoryUtils.product = {};
   }
   validattePrice = (rule, value) => {
     if (value * 1 > 0) {

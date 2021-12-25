@@ -8,6 +8,7 @@ import {
   reqUpdateStatus,
 } from "../../../../api";
 import { PAGE_SIZE } from "../../../../utils/constants";
+import memoryUtils from "../../../../utils/memoryUtils";
 import "./index.less";
 
 const Option = Select.Option;
@@ -83,8 +84,8 @@ export default class ProductHome extends Component {
     ];
   };
   handleJumpDetail = (product) => {
-    /*  this.props.history.push({ pathname: '/product/detail', state: { product: product } }) */
-    this.props.history.push("/product/detail", { product });
+    memoryUtils.product = product;
+    this.props.history.push("/product/detail");
   };
   getProducts = async (pageNum, pageSize) => {
     this.setState({ loading: true });
@@ -156,7 +157,8 @@ export default class ProductHome extends Component {
     this.props.history.push('/product/addUpdate');
   };
   handleJumpUpdate = (product) => {
-    this.props.history.push('/product/addUpdate', product);
+    memoryUtils.product = product;
+    this.props.history.push('/product/addUpdate');
   }
   render() {
     const {

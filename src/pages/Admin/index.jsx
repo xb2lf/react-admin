@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
 import { Header, LeftNav } from '../../components'
-import { Home, Category, Product, User, Role, Bar, Line, Pie } from '../index'
+import { Home, Category, Product, User, Role, Bar, Line, Pie, NotFound } from '../index'
 import './index.less'
 
 const { Footer, Sider, Content } = Layout;
@@ -24,6 +24,7 @@ class Admin extends Component {
           <Header>Header</Header>
           <Content className='layout-content'>
             <Switch>
+              <Redirect exact from="/" to="/home" />
               <Route path="/home" component={Home} />
               <Route path="/category" component={Category} />
               <Route path="/product" component={Product} />
@@ -32,7 +33,7 @@ class Admin extends Component {
               <Route path="/charts/bar" component={Bar} />
               <Route path="/charts/line" component={Line} />
               <Route path="/charts/pie" component={Pie} />
-              <Redirect to="/home" />
+              <Route component={NotFound} />
             </Switch>
           </Content>
           <Footer className='layout-footer'>推荐使用谷歌浏览器，可以获得更加页面操作体验</Footer>
